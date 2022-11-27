@@ -1,5 +1,4 @@
 import Cart from '../models/Cart.js';
-import filterFields from '../utils/filterFields.js';
 
 export async function readOne (req, res) {
     let cart;
@@ -8,6 +7,9 @@ export async function readOne (req, res) {
             .populate('user', '_id username')
             .populate('products.product', '_id name price');
     } catch (err) {
+        if(err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid cart id' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     }
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
@@ -33,6 +35,12 @@ export async function createOne (req, res) {
     try {
         card = await Cart.create({ user: req.token.id });
     } catch (err) {
+        if(err.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Invalid cart data' });
+        }
+        if(err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid user id' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     }
 
@@ -56,6 +64,9 @@ export async function updateOne (req, res) {
     try {
         await Cart.findByIdAndUpdate(req.params.id, fields);
     } catch (err) {
+        if(err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid cart id' });
+        }
         return res.status(400).json({ message: 'Cart not found' });
     }
 

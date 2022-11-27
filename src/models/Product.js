@@ -1,8 +1,15 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
+
+const { Schema, model } = mongoose;
 
 const productSchema = new Schema({
     name: {
         type: String,
+        required: true
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category',
         required: true
     },
     description: {
@@ -16,16 +23,10 @@ const productSchema = new Schema({
         type: Number,
         default: 0
     },
-    seller: {
+    user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    },
-    reviews: {
-        type: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Review'
-        }]
     }
 }, { versionKey: false });
 

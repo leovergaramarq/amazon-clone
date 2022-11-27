@@ -1,12 +1,15 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 import Product from './Product.js';
+
+const { Schema, model } = mongoose;
 
 const cartSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-        unique: true // user can only have one cart
+        unique: true,
+        index: true
     },
     products: {
         type: [{

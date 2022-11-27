@@ -8,6 +8,9 @@ export async function readOne (req, res) {
             .populate('user', '_id username')
             .populate('product', '_id name');
     } catch (err) {
+        if(err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid review id' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     }
     if (!review) return res.status(404).json({ message: 'Review not found' });
@@ -30,42 +33,29 @@ export async function readMany (req, res) {
 
 export async function createOne (req, res) {
     const { title, description, product } = req.body;
-    const user = req.token.id;
 
     let review;
     try {
         review = await Review.create(filterFields({
-            title, description, product, user
+            title, description, product, user: req.token.id
         }));
     } catch (err) {
+        if(err.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Please, fill all the fields' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     }
 
     res.status(201).json(review);
 }
 
-export async function updateOne (req, res) {
-    const { title, description, rating } = req.body;
-
-    if (!title && !description && !rating) {
-        return res.status(400).json({ message: 'Please, fill at least one field' });
-    }
-
-    let fields = filterFields({ title, description, rating });
-
-    try {
-        await Review.findByIdAndUpdate(req.params.id, fields);
-    } catch (err) {
-        return res.status(400).json({ message: 'Review not found' });
-    }
-
-    res.status(200).json({ fields: Object.keys(fields) });
-}
-
 export async function deleteOne (req, res) {
     try {
         await Review.findByIdAndDelete(req.params.id);
     } catch (err) {
+        if(err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid review id' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     }
 

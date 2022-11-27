@@ -24,6 +24,9 @@ export async function signUp(req, res) {
     const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
         expiresIn: 172800, // 2 days
     });
+    
+    // res.header('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=172800; SameSite=Strict; Secure`);
+    res.header('Set-Cookie', `token=${token}`);
     res.status(200).json({ token });
 }
 
@@ -49,5 +52,7 @@ export async function signIn(req, res) {
         expiresIn: 172800, // 2 days
     });
 
+    // res.header('Set-Cookie', `token=${token}; Path=/; HttpOnly; Max-Age=172800; SameSite=Strict; Secure`);
+    res.header('Set-Cookie', `token=${token}`);
     res.status(200).json({ token });
 }
