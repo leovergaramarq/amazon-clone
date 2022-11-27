@@ -1,11 +1,11 @@
 import User from '../models/User.js';
+import filterFields from '../utils/filterFields.js';
 
 export async function readOne (req, res) {
-    const { id } = req.params;
     let user;
 
     try {
-        user = await User.findById(id, '-password');
+        user = await User.findById(req.params.id, '-password');
     } catch (err) {
         return res.status(500).json({ message: 'Internal server error' });
     }
@@ -46,8 +46,8 @@ export async function createOne (req, res) {
 }
 
 export async function updateOne (req, res) {
-    const { id } = req.params;
     const { name, email, username, password, location } = req.body;
+
     if(!name && !email && !username && !password) {
         return res.status(400).json({ message: 'Please, fill at least one field' });
     }
@@ -58,7 +58,7 @@ export async function updateOne (req, res) {
     });
     
     try {
-        await User.findByIdAndUpdate(id, fields);
+        await User.findByIdAndUpdate(req.params.id, fields);
     } catch (err) {
         return res.status(400).json({ message: 'Username or email already exists' });
     }
@@ -67,10 +67,8 @@ export async function updateOne (req, res) {
 }
 
 export async function deleteOne (req, res) {
-    const { id } = req.params;
-
     try {
-        await User.findByIdAndDelete(id);
+        await User.findByIdAndDelete(req.params.id);
     } catch (err) {
         return res.status(500).json({ message: 'Internal server error' });
     }
