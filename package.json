@@ -1,0 +1,36 @@
+{
+  "name": "amazon-clone",
+  "version": "1.0.0",
+  "description": "Backend Amazon clone.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/",
+    "dev": "nodemon src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leovergaramarq/amazon-clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leovergaramarq/amazon-clone/issues"
+  },
+  "homepage": "https://github.com/leovergaramarq/amazon-clone#readme",
+  "type": "module",
+  "dependencies": {
+    "mongoose": "^5.13.2",
+    "jsonwebtoken": "^8.5.1",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "supertest": "^6.1.6",
+    "jest": "^27.0.6",
+    "eslint": "^7.32.0"
+  }
+}
