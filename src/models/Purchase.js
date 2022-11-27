@@ -6,8 +6,8 @@ const purchaseSchema = new Schema({
         ref: 'User',
         required: true
     },
-    products: [
-        {
+    products: {
+        type: [{
             product: {
                 type: Schema.Types.ObjectId,
                 ref: 'Product',
@@ -18,8 +18,8 @@ const purchaseSchema = new Schema({
                 required: true,
                 default: 1
             }
-        }
-    ],
+        }],
+    },
     total: {
         type: Number,
         required: true,

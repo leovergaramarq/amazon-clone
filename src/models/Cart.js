@@ -7,8 +7,8 @@ const cartSchema = new Schema({
         required: true,
         unique: true // user can only have one cart
     },
-    products: [
-        {
+    products: {
+        type: [{
             product: {
                 type: Schema.Types.ObjectId,
                 ref: 'Product',
@@ -19,8 +19,8 @@ const cartSchema = new Schema({
                 required: true,
                 default: 1
             }
-        }
-    ],
+        }]
+    },
     total: {
         type: Number,
         required: true,

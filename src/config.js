@@ -1,4 +1,4 @@
-import { config } from 'dotnev';
+import { config } from 'dotenv';
 
 config();
 

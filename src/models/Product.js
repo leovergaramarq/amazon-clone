@@ -22,12 +22,12 @@ const productSchema = new Schema({
         ref: 'User',
         required: true
     },
-    reviews: [
-        {
+    reviews: {
+        type: [{
             type: Schema.Types.ObjectId,
             ref: 'Review'
-        }
-    ]
+        }]
+    }
 }, { versionKey: false });
 
 export default model('Product', productSchema);

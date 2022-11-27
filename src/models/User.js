@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { encryptPassword, comparePassword } from '../utils/bcrypt.js';
 
 const userSchema = new Schema({
     username: {
@@ -24,5 +25,13 @@ const userSchema = new Schema({
         type: String
     }
 }, { versionKey: false });
+
+userSchema.statics.encryptPassword = password => (
+    encryptPassword(password)
+);
+
+userSchema.statics.comparePassword = function (password) {
+    return comparePassword(password, this.password);
+}
 
 export default model('User', userSchema);
