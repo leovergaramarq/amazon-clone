@@ -30,10 +30,13 @@ export async function readMany (req, res) {
 
 export async function createOne (req, res) {
     const { name, description, price, stock } = req.body;
+    if(!name || !description || !price || !stock) {
+        return res.status(400).json({ message: 'Please, fill all the fields' });
+    }
+    
     const seller = req.token.id;
 
     let product;
-
     try {
         product = await Product.create(filterFields({
             name, description, price, stock, seller
@@ -70,5 +73,5 @@ export async function deleteOne (req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'Product deleted successfully' });
 }
