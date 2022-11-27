@@ -3,7 +3,6 @@ import filterFields from '../utils/filterFields.js';
 
 export async function readOne (req, res) {
     let product;
-
     try {
         product = await Product.findById(req.params.id)
             .populate('seller', '_id username')
@@ -18,7 +17,6 @@ export async function readOne (req, res) {
 
 export async function readMany (req, res) {
     let products;
-
     try {
         products = await Product.find(req.query)
             .populate('seller', '_id username')
@@ -32,7 +30,7 @@ export async function readMany (req, res) {
 
 export async function createOne (req, res) {
     const { name, description, price, stock } = req.body;
-    const seller = req.token._id;
+    const seller = req.token.id;
 
     let product;
 

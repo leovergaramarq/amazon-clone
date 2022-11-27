@@ -3,7 +3,6 @@ import filterFields from '../utils/filterFields.js';
 
 export async function readOne (req, res) {
     let user;
-
     try {
         user = await User.findById(req.params.id, '-password');
     } catch (err) {
@@ -16,7 +15,6 @@ export async function readOne (req, res) {
 
 export async function readMany (req, res) {
     let users;
-
     try {
         users = await User.find(req.query, '-password');
     } catch (err) {
