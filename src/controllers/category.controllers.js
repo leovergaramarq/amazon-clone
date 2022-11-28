@@ -54,7 +54,7 @@ export async function updateOne (req, res) {
     }
 
     try {
-        await Category.findByIdAndUpdate(req.params.id, { name }, { new: true });
+        await Category.updateOne({ _id: req.params.id }, { name }, { new: true });
     } catch (err) {
         if(err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid category id' });
@@ -67,7 +67,7 @@ export async function updateOne (req, res) {
 
 export async function deleteOne (req, res) {
     try {
-        await Category.findByIdAndDelete(req.params.id);
+        await Category.deleteOne({ _id: req.params.id });
     } catch (err) {
         if(err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid category id' });

@@ -10,18 +10,22 @@ export async function signUp(req, res) {
         return res.status(400).json({ message: 'Please, fill all fields' });
     }
 
-    const newUser = new User(filterFields({
-        username, name, email, location,
-        password: User.encryptPassword(password),
-    }));
-
-    let savedUser;
+    let user;
     try {
-        savedUser = await newUser.save();
+        user = await User.create(filterFields({
+            username, name, email, location,
+            password: User.encryptPassword(password),
+        }));
+        console.log(user);
     } catch (err) {
-        return res.status(400).json({ message: 'Username or email already exists' });
+        console.log(err);
+        if(err.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Username or email already exists' });
+        }
+        return res.status(500).json({ message: 'Internal server error' });
     }
-    const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, {
         expiresIn: 172800, // 2 days
     });
     
@@ -45,7 +49,7 @@ export async function signIn(req, res) {
     }
     if(!user) return res.status(400).json({ message: 'User does not exist' });
 
-    const isMatch = User.comparePassword(password);
+    const isMatch = user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect password' });
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, {

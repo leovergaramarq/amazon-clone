@@ -3,8 +3,9 @@ import {
     readOne, readMany, createOne, updateOne, deleteOne,
     readProduct, readProducts,
     readReview, readReviews,
-    readCart, addToCart, removeFromCart, purchase,
-    readPurchase, readPurchases
+    // readCart, addToCart, removeFromCart,
+    readPurchase, readPurchases,
+    // purchase,
 } from '../controllers/user.controllers.js';
 import { verifyToken, correctUser } from '../middlewares/authJwt.js';
 
@@ -22,12 +23,13 @@ router.get('/:id/reviews', readReviews);
 router.get('/:id/products/:productId', readProduct);
 router.get('/:id/products', readProducts);
 
-router.get('/:id/cart', readCart);
-router.post('/:id/cart', addToCart);
-router.delete('/:id/cart/:productId', removeFromCart);
-router.post('/:id/cart/purchase', purchase);
+router.get('/:id/purchases/:purchaseId', readPurchase);
+router.get('/:id/purchases', readPurchases);
 
-router.get('/:id/hsitory/:purchaseId', readPurchase);
-router.get('/:id/hsitory', readPurchases);
+// router.get('/:id/cart', [verifyToken, correctUser], readCart);
+// router.post('/:id/cart', [verifyToken, correctUser], addToCart);
+// router.delete('/:id/cart/:productId', [verifyToken, correctUser], removeFromCart);
+
+// router.post('/:id/purchase', [verifyToken, correctUser], purchase);
 
 export default router;

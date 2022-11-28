@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 app.use('/v1', router);
 app.use((req, res) => {
-    res.status(404).json({ message: 'Route not found' });
+    res.status(404).json({ message: 'Not found' });
 });
 
 export default app;

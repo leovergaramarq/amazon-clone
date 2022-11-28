@@ -1,8 +1,11 @@
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import filterFields from '../utils/filterFields.js';
 import validCategory from '../utils/validCategory.js';
 import Category from '../models/Category.js';
+
+const { ObjectId } = mongoose.Types;
 
 export async function readOne (req, res) {
     let product;
@@ -42,15 +45,16 @@ export async function createOne (req, res) {
     
     let category;
     try {
-        category = (await Category.findById(cat))._id;
-    } catch (err) {
-        return res.status(500).json({ message: 'Internal server error' });
-    }
+        category = (ObjectId.isValid(cat) ?
+            await Category.findById(cat) :
+            await Category.findOne({ name: cat }))._id;
+    } catch (err) {}
     if(!category) {
         if(validCategory(cat)) {
             try {
                 category = (await Category.create({ name: cat }))._id;
             } catch (err) {
+                console.log(err);
                 if(err.name === 'ValidationError') {
                     return res.status(400).json({ message: 'Category already exists' });
                 }
@@ -110,7 +114,7 @@ export async function updateOne (req, res) {
     const fields = filterFields({ name, description, price, stock, category });
 
     try {
-        await Product.findByIdAndUpdate(req.params.id, fields, { new: true });
+        await Product.updateOne({ _id: req.params.id }, fields, { new: true });
     } catch (err) {
         if(err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid product id' });
@@ -123,7 +127,7 @@ export async function updateOne (req, res) {
 
 export async function deleteOne (req, res) {
     try {
-        await Product.findByIdAndDelete(req.params.id);
+        await Product.deleteOne({ _id: req.params.id });
     } catch (err) {
         if(err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid product id' });

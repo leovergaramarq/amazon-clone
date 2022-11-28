@@ -16,7 +16,7 @@ export function verifyToken(req, res, next) {
 }
 
 export function correctUser(req, res, next) {
-    if (req.token.id !== +req.params.id) {
+    if (req.token.id !== req.params.id) {
         console.log(req.token.id, req.params.id);
         return res.status(403).json({ message: 'You are not authorized to perform this action' });
     }

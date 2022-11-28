@@ -32,7 +32,7 @@ userSchema.statics.encryptPassword = password => (
     encryptPassword(password)
 );
 
-userSchema.statics.comparePassword = function (password) {
+userSchema.methods.comparePassword = function (password) {
     return comparePassword(password, this.password);
 }
 

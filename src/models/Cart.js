@@ -24,27 +24,7 @@ const cartSchema = new Schema({
                 default: 1
             }
         }]
-    },
-    total: {
-        type: Number,
-        required: true,
-        default: 0
     }
 }, { versionKey: false });
-
-cartSchema.statics.calculateTotal = async function (products) {
-    return products.reduce(async (total, { product, quantity }) => {
-        const { price } = await Product.findById(product);
-        return total + price * quantity;
-    }, 0);
-    
-    // let total = 0;
-    // for (let i = 0; i < products.length; i++) {
-    //     const product = products[i];
-    //     const { price } = await this.model('Product').findById(product.product);
-    //     total += price * product.quantity;
-    // }
-    // return total;
-}
 
 export default model('Cart', cartSchema);

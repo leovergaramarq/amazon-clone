@@ -1,16 +1,15 @@
-import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 import Purchase from '../models/Purchase.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
 import filterFields from '../utils/filterFields.js';
 
-export async function readOne (req, res) {
+export async function readOne(req, res) {
     let user;
     try {
         user = await User.findById(req.params.id, '-password');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -20,7 +19,7 @@ export async function readOne (req, res) {
     res.status(200).json(user);
 }
 
-export async function readMany (req, res) {
+export async function readMany(req, res) {
     let users;
     try {
         users = await User.find(req.query, '-password');
@@ -31,12 +30,12 @@ export async function readMany (req, res) {
     res.status(200).json(users);
 }
 
-export async function createOne (req, res) {
+export async function createOne(req, res) {
     const { name, email, username, password, location } = req.body;
-    if(!name || !email || !username || !password) {
+    if (!name || !email || !username || !password) {
         return res.status(400).json({ message: 'Please, fill all fields' });
     }
-    
+
     let user;
     try {
         user = await User.create(filterFields({
@@ -44,7 +43,7 @@ export async function createOne (req, res) {
             password: await User.encryptPassword(password)
         }));
     } catch (err) {
-        if(err.name === 'ValidationError') {
+        if (err.name === 'ValidationError') {
             return res.status(400).json({ message: 'Please, fill all the fields' });
         }
         return res.status(400).json({ message: 'Username or email already exists' });
@@ -53,10 +52,10 @@ export async function createOne (req, res) {
     res.status(201).json({ id: user._id });
 }
 
-export async function updateOne (req, res) {
+export async function updateOne(req, res) {
     const { name, email, username, password, location } = req.body;
 
-    if(!name && !email && !username && !password) {
+    if (!name && !email && !username && !password) {
         return res.status(400).json({ message: 'Please, fill at least one field' });
     }
 
@@ -64,11 +63,11 @@ export async function updateOne (req, res) {
         name, email, username, location,
         password: password ? User.encryptPassword(password) : undefined
     });
-    
+
     try {
-        await User.findByIdAndUpdate(req.params.id, fields);
+        await User.updateOne({ _id: req.params.id }, fields);
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(400).json({ message: 'Username or email already exists' });
@@ -77,11 +76,11 @@ export async function updateOne (req, res) {
     res.status(200).json({ fields: Object.keys(fields) });
 }
 
-export async function deleteOne (req, res) {
+export async function deleteOne(req, res) {
     try {
-        await User.findByIdAndDelete(req.params.id);
+        await User.deleteOne({ _id: req.params.id });
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -92,13 +91,13 @@ export async function deleteOne (req, res) {
 
 // REVIEWS
 
-export async function readReview (req, res) {
+export async function readReview(req, res) {
     let review;
     try {
         review = await Review.findOne({ user: req.params.id, _id: req.params.reviewId })
             .populate('product', '_id name');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid review or user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -108,13 +107,13 @@ export async function readReview (req, res) {
     res.status(200).json(review);
 }
 
-export async function readReviews (req, res) {
+export async function readReviews(req, res) {
     let reviews;
     try {
         reviews = await Review.find({ user: req.params.id })
             .populate('product', '_id name');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -125,13 +124,13 @@ export async function readReviews (req, res) {
 
 // PRODUCTS
 
-export async function readProduct (req, res) {
+export async function readProduct(req, res) {
     let product;
     try {
         product = await Product.findOne({ user: req.params.id, _id: req.params.productId })
             .populate('category', '_id name');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid product or user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -141,13 +140,13 @@ export async function readProduct (req, res) {
     res.status(200).json(product);
 }
 
-export async function readProducts (req, res) {
+export async function readProducts(req, res) {
     let products;
     try {
         products = await Product.find({ user: req.params.id })
             .populate('category', '_id name');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -156,133 +155,195 @@ export async function readProducts (req, res) {
     res.status(200).json(products);
 }
 
-// CART
+// // CART
 
-export async function readCart (req, res) {
-    let cart;
-    try {
-        cart = await Cart.findOne({ user: req.params.id }, '-user')
-            .populate('products.product', '_id name price');
-    } catch (err) {
-        if(err.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user id' });
-        }
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
+// export async function readCart(req, res) {
+//     let cart;
+//     try {
+//         cart = await Cart.findOne({ user: req.params.id }, '-user')
+//             .populate('products.product', '_id name price');
+//     } catch (err) {
+//         if (err.name === 'CastError') {
+//             return res.status(400).json({ message: 'Invalid user id' });
+//         }
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+//     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-    res.status(200).json(cart);
-}
+//     res.status(200).json(cart);
+// }
 
-export async function addToCart (req, res) {
-    const { productId, quantity } = req.body;
-    if (!productId || !quantity) {
-        return res.status(400).json({ message: 'Please, fill all fields' });
-    }
+// export async function addToCart(req, res) {
+//     const { product: productId, quantity } = req.body;
+//     if (!productId || !quantity) {
+//         return res.status(400).json({ message: 'Please, fill all fields' });
+//     }
 
-    let product;
-    try {
-        product = await Product.findById(productId);
-    } catch (err) {
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+//     if(quantity < 1) {
+//         return res.status(400).json({ message: 'Quantity must be greater than 0' });
+//     }
 
-    let cart;
+//     let product;
+//     try {
+//         product = await Product.findById(productId);
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+//     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    try {
-        cart = await Cart.findOneAndUpdate(
-            { user: req.params.id },
-            {
-                $push: { products: { product: productId, quantity } },
-                $inc: { total: product.price * quantity }
-            },
-            { new: true, upsert: true }
-        )
-    } catch (err) {
-        if(err.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user id' });
-        }
-        return res.status(500).json({ message: 'Internal server error' });
-    }
+//     if (product.stock < quantity) {
+//         return res.status(400).json({ message: 'Not enough products in stock' });
+//     }
 
-    res.status(200).json(cart);
-}
+//     let cart;
+//     try {
+//         cart = await Cart.findOne({ user: req.params.id });
+//     } catch (err) {
+//         if (err.name === 'CastError') {
+//             return res.status(400).json({ message: 'Invalid user id' });
+//         }
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
 
-export async function removeFromCart (req, res) {
-    const { productId } = req.body;
-    if (!productId) {
-        return res.status(400).json({ message: 'Please, fill all fields' });
-    }
+//     if (!cart) {
+//         try {
+//             cart = await Cart.create({ user: req.params.id });
+//         } catch (err) {
+//             return res.status(500).json({ message: 'Internal server error' });
+//         }
+//     }
 
-    let product;
-    try {
-        product = await Product.findById(productId);
-    } catch (err) {
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+//     try {
+//         cart = await Cart.findOneAndUpdate(
+//             { user: req.params.id },
+//             (cart.products?.some(p => p.product.equals(productId)) ?
+//                 {
+//                     $set: { 'products.$[p].quantity': quantity }
+//                 } :
+//                 {
+//                     $push: { products: { product: productId, quantity } }
+//                 }),
+//                 { arrayFilters: [{ 'p.product': productId }], new: true }
+//         )
+//     } catch (err) {
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+
+//     res.status(200).json(cart);
+// }
+
+// export async function removeFromCart(req, res) {
+//     const { productId } = req.params;
+//     if (!productId) {
+//         return res.status(400).json({ message: 'Please, fill all fields' });
+//     }
+
+//     let product;
+//     try {
+//         product = await Product.findById(productId);
+//     } catch (err) {
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+//     if (!product) return res.status(404).json({ message: 'Product not found' });
+
+//     let cart;
+//     try {
+//         cart = await Cart.findOneAndUpdate(
+//             { user: req.params.id },
+//             { $pull: { products: { product: productId } } },
+//             { new: true }
+//         );
+//     } catch (err) {
+//         if (err.name === 'CastError') {
+//             return res.status(400).json({ message: 'Invalid user id' });
+//         }
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+//     if (!cart) return res.status(404).json({ message: 'Cart not found' });
+
+//     res.status(200).json(cart);
+// }
+
+// PURCHASE
+
+// export async function purchase(req, res) {
+//     let cart;
+//     try {
+//         cart = await Cart.findOne({ user: req.params.id });
+//     } catch (err) {
+//         if (err.name === 'CastError') {
+//             return res.status(400).json({ message: 'Invalid user id' });
+//         }
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
+//     if (!cart) return res.status(404).json({ message: 'Cart not found' });
+
+//     const { products } = cart;
+
+//     let purchase;
+
+//     const session = await mongoose.startSession();
+//     session.startTransaction();
+//     try {
+//         try {
+//             purchase = await Purchase.create([{
+//                 products,
+//                 user: req.params.id,
+//                 total: await Purchase.calculateTotal(products)
+//             }], { session });
+//         } catch (err) {
+//             await session.abortTransaction();
+//             session.endSession();
+            
+//             if (err.name === 'ValidationError') {
+//                 return res.status(400).json({ message: 'Invalid purchase data' });
+//             }
+//             return res.status(500).json({ message: 'Internal server error' });
+//         }
+
+//         try {
+//             for (let i = 0; i < products.length; i++) {
+//                 await Product.updateOne(
+//                     { _id: products[i].product },
+//                     { $inc: { stock: -products[i].quantity } },
+//                     { session }
+//                 );
+//             }
+//         } catch (err) {
+//             await session.abortTransaction();
+//             session.endSession();
+//             return res.status(500).json({ message: 'Internal server error' });
+//         }
+
+//         await session.commitTransaction();
+//         session.endSession();
+//     } catch (err) {
+//         await session.abortTransaction();
+//         session.endSession();
+//         return res.status(500).json({ message: 'Internal server error' });
+//     }
     
-    let cart;
-    try {
-        cart = await Cart.findOneAndUpdate(
-            { user: req.params.id },
-            {
-                $pull: { products: { product: productId } },
-                $inc: { total: -product.price * quantity }
-            },
-            { new: true }
-        );
-    } catch (err) {
-        if(err.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user id' });
-        }
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-    if(!cart) return res.status(404).json({ message: 'Cart not found' });
+//     try {
+//         await Cart.updateOne({ user: req.params.id }, { products: [] });
+//         // await Cart.deleteOne({ user: req.params.id });
+//     } catch (err) {
+//         console.log('Could not empty cart');
+//         console.log(err);
+//     }
 
-    res.status(200).json(cart);
-}
-
-export async function purchase (req, res) {
-    let cart;
-    try {
-        cart = await Cart.findOne({ user: req.params.id });
-    } catch (err) {
-        if(err.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user id' });
-        }
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
-
-    const { products, total } = cart;
-    
-    let purchase;
-    try {
-        purchase = await Purchase.create({ user: req.params.id, products, total });
-    } catch (err) {
-        if(err.name === 'CastError') {
-            return res.status(400).json({ message: 'Invalid user id' });
-        }
-        if(err.name === 'ValidationError') {
-            return res.status(400).json({ message: 'Invalid purchase data' });
-        }
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-
-    res.status(200).json(purchase);
-}
+//     res.status(200).json(purchase);
+// }
 
 // PURCHASES
 
-export async function readPurchase (req, res) {
+export async function readPurchase(req, res) {
     let purchase;
     try {
         purchase = await Purchase.findOne({ user: req.params.id, _id: req.params.purchaseId })
             .populate('products.product', '_id name price');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid purchase or user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });
@@ -292,13 +353,13 @@ export async function readPurchase (req, res) {
     res.status(200).json(purchase);
 }
 
-export async function readPurchases (req, res) {
+export async function readPurchases(req, res) {
     let purchases;
     try {
         purchases = await Purchase.find({ user: req.params.id })
             .populate('products.product', '_id name price');
     } catch (err) {
-        if(err.name === 'CastError') {
+        if (err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid user id' });
         }
         return res.status(500).json({ message: 'Internal server error' });

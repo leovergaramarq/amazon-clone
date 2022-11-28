@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { readOne, readMany, createOne, updateOne } from '../controllers/cart.controllers.js';
+import { readOne, addProduct, removeProduct } from '../controllers/cart.controllers.js';
+import { verifyToken } from '../middlewares/authJwt.js';
 
 const router = Router();
 
-router.get('/:id', readOne);
-router.get('/', readMany);
-router.post('/', createOne);
-router.put('/:id', updateOne);
+router.get('/', verifyToken, readOne);
+router.post('/', verifyToken, addProduct);
+router.delete('/:productId', verifyToken, removeProduct);
 
 export default router;

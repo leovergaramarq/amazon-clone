@@ -11,7 +11,7 @@ const router = Router();
 
 router.use('/users', user);
 router.use('/products', product);
-router.use('/carts', cart);
+router.use('/cart', cart);
 router.use('/reviews', review);
 router.use('/purchases', purchase);
 router.use('/auth', auth);

@@ -51,7 +51,7 @@ export async function createOne (req, res) {
 
 export async function deleteOne (req, res) {
     try {
-        await Review.findByIdAndDelete(req.params.id);
+        await Review.deleteOne({ _id: req.params.id, user: req.token.id });
     } catch (err) {
         if(err.name === 'CastError') {
             return res.status(400).json({ message: 'Invalid review id' });

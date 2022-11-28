@@ -21,7 +21,8 @@ const productSchema = new Schema({
     },
     stock: {
         type: Number,
-        default: 0
+        default: 0,
+        min: [0, 'Stock cannot be negative']
     },
     user: {
         type: Schema.Types.ObjectId,
@@ -29,5 +30,9 @@ const productSchema = new Schema({
         required: true
     }
 }, { versionKey: false });
+
+// productSchema.pre()
+// Pre update hook
+productSchema.pre('update', async function (next) {});
 
 export default model('Product', productSchema);
