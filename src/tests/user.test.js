@@ -9,6 +9,8 @@ import router from '../routes/index.routes.js';
 
 describe('User', () => {
   let app;
+  let user_id;
+  let token;
     beforeAll(async () => {
         app= express();
 
@@ -38,44 +40,79 @@ describe('User', () => {
     });
     
     // GETS ALL USERS
-    test("/user", async () => {
+    test("/users", async () => {
         const response = await request(app).get("/v1/users");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/user/:id", async () => {
+    test("/users/:id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/user/:id/review", async () => {
+    test("/users/:id/review", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews");
         expect(response.statusCode).toBe(200);
     });
 
-    test("user/:id/review/:id", async () => {
+    test("/users/:id/review/:id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews/6383e5e49e1fa907cd2e4ad2");
         expect(response.statusCode).toBe(200);
     });
 
-    test("user/:id/products", async () => {
+    test("/users/:id/products", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products");
         expect(response.statusCode).toBe(200);
     });
 
-    test("user/:id/products/:id", async () => {
+    test("/users/:id/products/:id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products/63841d0e864f966b3d0eb84d");
         expect(response.statusCode).toBe(200);
     });
 
-    test("user/:id/purchases", async () => {
+    test("/users/:id/purchases", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases");
         expect(response.statusCode).toBe(200);
     });
 
-    test("user/:id/purchases/:id", async () => {
+    test("/users/:id/purchases/:id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases/63840fc17e631a19b7799198");
         expect(response.statusCode).toBe(200);
     });
 
+    // POSTS A NEW USER
+    test("/users", async () => {
+        const response = await request(app).post("/v1/users").send({
+            "name": "Test",
+            "email": "test@corre.com",
+            "password": "123",
+            "username": "tester"
+        });
+        expect(response.statusCode).toBe(201);
+        user_id = response.body.id;
+        console.log(user_id)
+    });
+    
+    // UPDATES A USER
+    test("/users/:id", async () => {
+        token = await request(app).post("/v1/auth/login").send({
+            "email": "test@corre.com",
+            "password":"123"
+        });
+        const response = await request(app).put("/v1/users/"+user_id).send({
+            "name": "Test",
+            "email": "test@correo.com"
+        }).set('Authorization', 'Bearer '+token.body.token);
+        expect(response.statusCode).toBe(200);
+    });
+
+    // DELETES A USER
+    test("/users/:id", async () => {
+        token = await request(app).post("/v1/auth/login").send({
+            "email": "test@correo.com",
+            "password":"123"
+        });
+        const response = await request(app).delete("/v1/users/"+user_id).set('Authorization', 'Bearer '+token.body.token);
+        expect(response.statusCode).toBe(200);
+    });
 });
