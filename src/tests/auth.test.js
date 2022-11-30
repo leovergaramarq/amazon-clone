@@ -48,7 +48,7 @@ describe('User', () => {
     });
 
     //Login failed wrong password
-    test("/login", async () => {
+    test("login fail wrong password", async () => {
         const response = await request(app).post("/v1/auth/login").send({
             "email": "user1@email.com",
             "password": "1234"
@@ -57,7 +57,7 @@ describe('User', () => {
     });
 
     //Login failed wrong email
-    test("/login", async () => {
+    test("/login fail wrong email", async () => {
         const response = await request(app).post("/v1/auth/login").send({
             "email": "u@notemail.com",
             "password": "123"
@@ -66,7 +66,7 @@ describe('User', () => {
     });
 
     //Login failed empty email
-    test("/login", async () => {
+    test("/login empty email", async () => {
         const response = await request(app).post("/v1/auth/login").send({
             "email": "",
             "password": "123"
@@ -75,7 +75,7 @@ describe('User', () => {
     });
 
     //Login failed empty password
-    test("/login", async () => {
+    test("/login empty password", async () => {
         const response = await request(app).post("/v1/auth/login").send({
             "email": "user1@email.com",
             "password": ""
@@ -95,8 +95,19 @@ describe('User', () => {
         expect(response.statusCode).toBe(200);
     });
 
+    //Register failed already exist
+    test("/register failed already exist", async () => {
+        const response = await request(app).post("/v1/auth/signup").send({
+            "username": "user1",
+            "name": "user1",
+            "email": "user3@gmail.com",
+            "password": "123"
+        });
+        expect(response.statusCode).toBe(500);
+    });
+
     //Register failed
-    test("/register", async () => {
+    test("/register failed", async () => {
         const response = await request(app).post("/v1/auth/signup").send({
             "name": "user1",
             "email": ""

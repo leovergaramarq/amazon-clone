@@ -40,48 +40,96 @@ describe('User', () => {
     });
     
     // GETS ALL USERS
-    test("/users", async () => {
+    test("/users ge5t", async () => {
         const response = await request(app).get("/v1/users");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id", async () => {
+    //get user by id
+    test("/users/:id get by id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id/review", async () => {
+    //fail get user by id
+    test("/users/:id get by id failed", async () => {
+        const response = await request(app).get("/v1/users/638");
+        expect(response.statusCode).toBe(400);
+    });
+
+    //get user reviews
+    test("/users/:id/review get user reviews", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id/review/:id", async () => {
+    //fail get user reviews
+    test("/users/:id/review get user reviews failed", async () => {
+        const response = await request(app).get("/v1/users/638/reviews");
+        expect(response.statusCode).toBe(400);
+    });
+
+    //get user reviews by id
+    test("/users/:id/review/:id get user review by id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews/6383e5e49e1fa907cd2e4ad2");
         expect(response.statusCode).toBe(200);
     });
+    //fail get user reviews by id
+    test("/users/:id/review/:id get user review by id failed", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews/638");
+        expect(response.statusCode).toBe(400);
+    });
 
-    test("/users/:id/products", async () => {
+    //get user products
+    test("/users/:id/products get", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id/products/:id", async () => {
+    //fail get user products
+    test("/users/:id/products get failed", async () => {
+        const response = await request(app).get("/v1/users/638/products");
+        expect(response.statusCode).toBe(400);
+    });
+
+    //get user products by id
+    test("/users/:id/products/:id get by id", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products/63841d0e864f966b3d0eb84d");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id/purchases", async () => {
+    //fail get user products by id
+    test("/users/:id/products/:id get by id failed", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products/638");
+        expect(response.statusCode).toBe(400);
+    });
+
+    //get user purchases
+    test("/users/:id/purchases get", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases");
         expect(response.statusCode).toBe(200);
     });
 
-    test("/users/:id/purchases/:id", async () => {
+    //fail get user purchases
+    test("/users/:id/purchases get failed", async () => {
+        const response = await request(app).get("/v1/users/638/purchases");
+        expect(response.statusCode).toBe(400);
+    });
+
+    //get user purchases by id
+    test("/users/:id/purchases/:id get", async () => {
         const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases/63840fc17e631a19b7799198");
         expect(response.statusCode).toBe(200);
     });
 
+    //fail get user purchases by id
+    test("/users/:id/purchases/:id get failed", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases/638");
+        expect(response.statusCode).toBe(400);
+    });
+
     // POSTS A NEW USER
-    test("/users", async () => {
+    test("/users post", async () => {
         const response = await request(app).post("/v1/users").send({
             "name": "Test",
             "email": "test@corre.com",
@@ -92,9 +140,22 @@ describe('User', () => {
         user_id = response.body.id;
         console.log(user_id)
     });
+
+    //fail post user
+    test("/users post failed", async () => {
+        const response = await request(app).post("/v1/users").send({
+            "name": "Test",
+            "email": "",
+            "passwoord": "",
+            "username": ""
+        });
+        expect(response.statusCode).toBe(400);
+    });
+
+
     
     // UPDATES A USER
-    test("/users/:id", async () => {
+    test("/users/:id update", async () => {
         token = await request(app).post("/v1/auth/login").send({
             "email": "test@corre.com",
             "password":"123"
@@ -106,13 +167,62 @@ describe('User', () => {
         expect(response.statusCode).toBe(200);
     });
 
-    // DELETES A USER
-    test("/users/:id", async () => {
+    //fail update user no token 
+    test("/users/:id update failed no token", async () => {
+        const response = await request(app).put("/v1/users/"+user_id).send({
+            "name": "Test",
+            "email": ""
+        });
+        expect(response.statusCode).toBe(401);
+    });
+
+    //fail update user wrong token
+    test("/users/:id update failed wrong token", async () => {
+        token = await request(app).post("/v1/auth/login").send({
+            "email": "test@corre.com",
+            "password":"123"
+        });
+        const response = await request(app).put("/v1/users/"+user_id).send({
+            "name": "Test",
+            "email": "test@correo.com"
+        }).set('Authorization', 'Bearer '+token.body.token+"123");
+        expect(response.statusCode).toBe(400);
+    });
+
+            
+   
+     //fail delete user wrong token
+     test("/users/:id delete failed wrong token", async () => {
+        token = await request(app).post("/v1/auth/login").send({
+            "email": "test@correo.com",
+            "password":"123" 
+        });
+        const response = await request(app).delete("/v1/users/"+user_id).set('Authorization', 'Bearer '+token.body.token+"123");
+        expect(response.statusCode).toBe(400);
+    });
+
+     //fail delete user no token
+     test("/users/:id delete failed no token", async () => {
+        const response = await request(app).delete("/v1/users/"+user_id);
+        expect(response.statusCode).toBe(401);
+    });
+
+    //delete user not permitted
+    test("/users/:id delete failed not permitted", async () => {
+        token = await request(app).post("/v1/auth/login").send({
+            "email": "test@correo.com",
+            "password":"123"
+        });
+        const response = await request(app).delete("/v1/users/638414b51bad7d3c9aada081").set('Authorization', 'Bearer '+token.body.token);
+        expect(response.statusCode).toBe(403);
+    });
+     // DELETES A USER
+    test("/users/:id delete", async () => {
         token = await request(app).post("/v1/auth/login").send({
             "email": "test@correo.com",
             "password":"123"
         });
         const response = await request(app).delete("/v1/users/"+user_id).set('Authorization', 'Bearer '+token.body.token);
         expect(response.statusCode).toBe(200);
-    });
+    });     
 });

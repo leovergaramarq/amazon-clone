@@ -51,13 +51,13 @@ describe('User', () => {
     });
 
     //get category by id bad request
-    test("/categories/:id", async () => {
+    test("/categories/:id get wrong id", async () => {
         const response = await request(app).get("/v1/categories/638");
         expect(response.statusCode).toBe(400);
     });
 
     //post category
-    test("/categories", async () => {
+    test("/categories post ", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",                
             "password": "123"
@@ -70,7 +70,7 @@ describe('User', () => {
     });
 
     //post category no token
-    test("/categories", async () => {
+    test("/categories post no token", async () => {
         const response = await request(app).post("/v1/categories").send({
             "name": "test"
         });
@@ -78,7 +78,7 @@ describe('User', () => {
     });
 
     //post category wrong token
-    test("/categories", async () => {
+    test("/categories post wrong token", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",                
             "password": "123"
@@ -90,7 +90,7 @@ describe('User', () => {
     });
 
     //post category bad request
-    test("/categories", async () => {
+    test("/categories post bad request", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",                
             "password": "123"
@@ -102,7 +102,7 @@ describe('User', () => {
     });
 
     //update category
-    test("/categories/:id", async () => {
+    test("/categories/:id update", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",                
             "password": "123"
@@ -114,7 +114,7 @@ describe('User', () => {
     });
 
     //update category no token
-    test("/categories/:id", async () => {
+    test("/categories/:id update no token", async () => {
         const response = await request(app).put("/v1/categories/"+category_id).send({
             "name": "tester"
         });
@@ -122,7 +122,7 @@ describe('User', () => {
     });
 
     //update category wrong token
-    test("/categories/:id", async () => {
+    test("/categories/:id update wrong token", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",
             "password": "123"
@@ -134,7 +134,7 @@ describe('User', () => {
     });
 
     //update category bad request
-    test("/categories/:id", async () => {
+    test("/categories/:id update bad request", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",
             "password": "123"
@@ -148,7 +148,7 @@ describe('User', () => {
 
 
     //delete category
-    test("/categories/:id", async () => {
+    test("/categories/:id delete", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",                
             "password": "123"
@@ -158,13 +158,13 @@ describe('User', () => {
     });
 
     //delete category no token
-    test("/categories/:id", async () => {
+    test("/categories/:id delete no token", async () => {
         const response = await request(app).delete("/v1/categories/"+category_id);
         expect(response.statusCode).toBe(401);
     });
 
     //delete category wrong token
-    test("/categories/:id", async () => {
+    test("/categories/:id delete wrong token", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",
             "password": "123"
@@ -174,7 +174,7 @@ describe('User', () => {
     });
     
     //delete category bad request
-    test("/categories/:id", async () => {
+    test("/categories/:id delete bad request", async () => {
         const token = await request(app).post("/v1/auth/login").send({
             "username": "user1",
             "password": "123"
