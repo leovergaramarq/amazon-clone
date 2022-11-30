@@ -50,6 +50,12 @@ describe('User', () => {
         expect(response.statusCode).toBe(200);
     });
 
+    //get category by id bad request
+    test("/categories/:id", async () => {
+        const response = await request(app).get("/v1/categories/638");
+        expect(response.statusCode).toBe(400);
+    });
+
     //post category
     test("/categories", async () => {
         const token = await request(app).post("/v1/auth/login").send({
@@ -61,6 +67,38 @@ describe('User', () => {
         }).set('authorization', `Bearer ${token.body.token}`);
         expect(response.statusCode).toBe(201);
         category_id = response.body._id;
+    });
+
+    //post category no token
+    test("/categories", async () => {
+        const response = await request(app).post("/v1/categories").send({
+            "name": "test"
+        });
+        expect(response.statusCode).toBe(401);
+    });
+
+    //post category wrong token
+    test("/categories", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",                
+            "password": "123"
+        });
+        const response = await request(app).post("/v1/categories").send({
+            "name": "test"
+        }).set('authorization', `Bearer ${token.body.token}12`);
+        expect(response.statusCode).toBe(400);
+    });
+
+    //post category bad request
+    test("/categories", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",                
+            "password": "123"
+        });
+        const response = await request(app).post("/v1/categories").send({
+            
+        }).set('authorization', `Bearer ${token.body.token}`);
+        expect(response.statusCode).toBe(400);
     });
 
     //update category
@@ -75,6 +113,40 @@ describe('User', () => {
         expect(response.statusCode).toBe(200);
     });
 
+    //update category no token
+    test("/categories/:id", async () => {
+        const response = await request(app).put("/v1/categories/"+category_id).send({
+            "name": "tester"
+        });
+        expect(response.statusCode).toBe(401);
+    });
+
+    //update category wrong token
+    test("/categories/:id", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",
+            "password": "123"
+        });
+        const response = await request(app).put("/v1/categories/"+category_id).send({
+            "name": "tester"
+        }).set('authorization', `Bearer ${token.body.token}12`);
+        expect(response.statusCode).toBe(400);
+    });
+
+    //update category bad request
+    test("/categories/:id", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",
+            "password": "123"
+        });
+        const response = await request(app).put("/v1/categories/"+category_id).send({
+            
+        }).set('authorization', `Bearer ${token.body.token}`);
+        expect(response.statusCode).toBe(400);
+    });
+
+
+
     //delete category
     test("/categories/:id", async () => {
         const token = await request(app).post("/v1/auth/login").send({
@@ -83,5 +155,31 @@ describe('User', () => {
         });
         const response = await request(app).delete("/v1/categories/"+category_id).set('authorization', `Bearer ${token.body.token}`);
         expect(response.statusCode).toBe(200);
+    });
+
+    //delete category no token
+    test("/categories/:id", async () => {
+        const response = await request(app).delete("/v1/categories/"+category_id);
+        expect(response.statusCode).toBe(401);
+    });
+
+    //delete category wrong token
+    test("/categories/:id", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",
+            "password": "123"
+        });
+        const response = await request(app).delete("/v1/categories/"+category_id).set('authorization', `Bearer ${token.body.token}12`);
+        expect(response.statusCode).toBe(400);
+    });
+    
+    //delete category bad request
+    test("/categories/:id", async () => {
+        const token = await request(app).post("/v1/auth/login").send({
+            "username": "user1",
+            "password": "123"
+        });
+        const response = await request(app).delete("/v1/categories/638").set('authorization', `Bearer ${token.body.token}`);
+        expect(response.statusCode).toBe(400);
     });
 });

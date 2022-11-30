@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/",
     "dev": "nodemon src/",
-    "test": "jest categories.test.js"
+    "test": "jest auth.test.js"
   },
   "repository": {
     "type": "git",

@@ -47,11 +47,38 @@ describe('User', () => {
         expect(response.statusCode).toBe(200);
     });
 
-    //Login failed
+    //Login failed wrong password
     test("/login", async () => {
         const response = await request(app).post("/v1/auth/login").send({
             "email": "user1@email.com",
             "password": "1234"
+        });
+        expect(response.statusCode).toBe(400);
+    });
+
+    //Login failed wrong email
+    test("/login", async () => {
+        const response = await request(app).post("/v1/auth/login").send({
+            "email": "u@notemail.com",
+            "password": "123"
+        });
+        expect(response.statusCode).toBe(400);
+    });
+
+    //Login failed empty email
+    test("/login", async () => {
+        const response = await request(app).post("/v1/auth/login").send({
+            "email": "",
+            "password": "123"
+        });
+        expect(response.statusCode).toBe(400);
+    });
+
+    //Login failed empty password
+    test("/login", async () => {
+        const response = await request(app).post("/v1/auth/login").send({
+            "email": "user1@email.com",
+            "password": ""
         });
         expect(response.statusCode).toBe(400);
     });
