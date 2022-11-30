@@ -37,9 +37,45 @@ describe('User', () => {
         await mongoose.connection.close();
     });
     
-    
+    // GETS ALL USERS
     test("/user", async () => {
         const response = await request(app).get("/v1/users");
         expect(response.statusCode).toBe(200);
     });
+
+    test("/user/:id", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("/user/:id/review", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("user/:id/review/:id", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/reviews/6383e5e49e1fa907cd2e4ad2");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("user/:id/products", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("user/:id/products/:id", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/products/63841d0e864f966b3d0eb84d");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("user/:id/purchases", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases");
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("user/:id/purchases/:id", async () => {
+        const response = await request(app).get("/v1/users/6383dfccebb35967b2945143/purchases/63840fc17e631a19b7799198");
+        expect(response.statusCode).toBe(200);
+    });
+
 });
