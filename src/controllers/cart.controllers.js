@@ -124,7 +124,7 @@ export async function removeProduct(req, res) {
     let cart;
     try {
         cart = await Cart.findOneAndUpdate(
-            { user: req.params.id },
+            { user: req.token.id },
             { $pull: { products: { product: productId } } },
             { new: true }
         );

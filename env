@@ -1,0 +1,3 @@
+MONGO_URI="mongodb+srv://mmwbo:xnAri0b52FMaUQGN@cluster0.vkklimm.mongodb.net/?retryWrites=true&w=majority"
+
+JWT_SECRET="arepadehuevo"
